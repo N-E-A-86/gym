@@ -1,0 +1,8 @@
+{
+  "name": "BioPerformance PRO",
+  "description": "Plataforma avanzada de análisis biométrico y optimización del rendimiento deportivo con inteligencia artificial.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
