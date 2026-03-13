@@ -56,7 +56,7 @@
   }
 
   .glow-primary {
-    @apply shadow-[0_0_20px_rgba(13, 226, 242, 0.15)];
+    box-shadow: 0 0 20px rgba(13, 226, 242, 0.15);
   }
 
   .inner-glow {
