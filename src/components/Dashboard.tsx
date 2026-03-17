@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import StagnationAlert from './StagnationAlert';
 import { motion } from 'motion/react';
 import { cn } from './Layout';
+import BioCore3D from './BioCore3D';
 import {
   BarChart,
   Bar,
@@ -60,21 +61,21 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="flex items-center gap-6 glass-raised p-5 rounded-[2rem] border-white/5 glow-primary">
-          <div className="flex flex-col">
+        <div className="flex items-center gap-6 glass-raised p-5 rounded-[2rem] border-white/5 glow-primary relative overflow-visible">
+          <div className="flex flex-col z-10">
             <span className="text-[10px] text-primary uppercase font-black tracking-[0.2em] mb-1">Status de Tejido</span>
             <span className="text-xl font-black text-white italic">Fase Supercompensación</span>
           </div>
-          <div className="h-12 w-[1px] bg-white/10 mx-2"></div>
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-            className="size-16 rounded-full border-[3px] border-primary/20 border-t-primary flex items-center justify-center shadow-[0_0_15px_rgba(13,226,242,0.2)]"
-          >
-            <span className="text-sm font-black text-primary">88%</span>
-          </motion.div>
+          <div className="h-12 w-[1px] bg-white/10 mx-2 z-10"></div>
+          <div className="size-24 -my-4 relative z-0 flex items-center justify-center">
+            <BioCore3D />
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none mt-1">
+              <span className="text-[11px] font-black pointer-events-none">88%</span>
+            </div>
+          </div>
         </div>
       </div>
+
 
       {/* Specimen KPI Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
