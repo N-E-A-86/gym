@@ -7,6 +7,8 @@ import ProgramArchitect from './components/ProgramArchitect';
 import AIChat from './components/AIChat';
 import Admin from './components/Admin';
 import Store from './components/Store';
+import AIRoutineGenerator from './components/AIRoutineGenerator';
+import Membership from './components/Membership';
 import { Screen } from './types';
 
 export default function App() {
@@ -28,14 +30,18 @@ export default function App() {
         return <Admin />;
       case 'store':
         return <Store />;
+      case 'routines':
+        return <AIRoutineGenerator />;
+      case 'membership':
+        return <Membership />;
       default:
         return <Dashboard />;
     }
   };
 
   return (
-    <Layout 
-      currentScreen={currentScreen} 
+    <Layout
+      currentScreen={currentScreen}
       onScreenChange={(screen) => setCurrentScreen(screen)}
     >
       <div className="relative">

@@ -15,166 +15,144 @@ interface LayoutProps {
 
 export default function Layout({ children, currentScreen, onScreenChange }: LayoutProps) {
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'bar_chart' },
-    { id: 'architect', label: 'Programas', icon: 'format_list_bulleted' },
+    { id: 'dashboard', label: 'Inicio', icon: 'home' },
+    { id: 'routines', label: 'Rutinas IA', icon: 'auto_awesome', highlight: true },
+    { id: 'architect', label: 'Mi Programa', icon: 'fitness_center' },
     { id: 'history', label: 'Historial', icon: 'history' },
-    { id: 'onboarding', label: 'Biometría', icon: 'body_system' },
-    { id: 'store', label: 'Tienda Merch', icon: 'shopping_bag' },
-    { id: 'chat', label: 'Coach IA', icon: 'smart_toy' },
+    { id: 'membership', label: 'Membresía', icon: 'card_membership' },
+    { id: 'store', label: 'Tienda', icon: 'shopping_bag' },
+    { id: 'chat', label: 'Coach', icon: 'chat' },
   ];
 
   const adminItems = [
-    { id: 'admin', label: 'Admin Gym', icon: 'admin_panel_settings' },
+    { id: 'admin', label: 'Admin', icon: 'settings' },
   ];
+
+  const allItems = [...navItems, ...adminItems];
+  const activeItem = allItems.find(item => item.id === currentScreen);
+  const screenTitle = activeItem ? activeItem.label : currentScreen.charAt(0).toUpperCase() + currentScreen.slice(1);
 
   return (
     <div className="relative flex h-screen overflow-hidden bg-background-dark text-slate-100 font-display">
-      {/* Background Decorative Elements */}
-      <div className="fixed inset-0 bg-grain opacity-[0.03] pointer-events-none z-50" />
-      <div className="fixed -top-24 -left-24 size-96 bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="fixed -bottom-24 -right-24 size-96 bg-accent-amber/5 blur-[120px] rounded-full pointer-events-none" />
+      {/* Clean Sidebar */}
+      <aside className="w-64 p-4 h-full hidden lg:flex flex-col relative z-20 bg-surface border-r border-white/5">
+        {/* Logo */}
+        <div className="p-4 flex items-center gap-3 mb-6">
+          <div className="bg-primary/10 p-2 rounded-xl border border-primary/20">
+            <span className="material-symbols-outlined text-primary text-xl">exercise</span>
+          </div>
+          <div className="flex flex-col">
+            <h2 className="text-lg font-bold tracking-tight text-slate-100">
+              My <span className="text-primary font-semibold">Gym</span>
+            </h2>
+          </div>
+        </div>
 
-      {/* Floating HUD Sidebar */}
-      <aside className="w-72 p-6 h-full hidden lg:flex flex-col relative z-20">
-        <div className="glass-raised rounded-[2.5rem] h-full flex flex-col overflow-hidden">
-          <div className="p-8 flex items-center gap-4">
-            <motion.div
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              className="bg-primary/20 p-2.5 rounded-2xl border border-primary/30 shadow-[0_0_15px_rgba(13,226,242,0.2)]"
+        {/* Main Navigation */}
+        <nav className="flex-1 space-y-1">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => onScreenChange(item.id)}
+              className={cn(
+                "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm",
+                currentScreen === item.id
+                  ? "bg-primary/10 text-primary font-medium border border-primary/20"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5",
+                item.highlight && currentScreen !== item.id && "text-primary/80"
+              )}
             >
-              <span className="material-symbols-outlined text-primary text-2xl">exercise</span>
-            </motion.div>
-            <div className="flex flex-col">
-              <h2 className="text-xl font-bold tracking-tighter text-slate-100 flex items-center gap-1.5">
-                My <span className="text-primary italic font-black">Gym</span>
-              </h2>
-              <span className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold">V-2.4 Precision</span>
-            </div>
+              <span className={cn(
+                "material-symbols-outlined text-lg",
+                currentScreen === item.id ? "text-primary" : "text-slate-500"
+              )}>
+                {item.icon}
+              </span>
+              <span>{item.label}</span>
+              {item.highlight && (
+                <span className="ml-auto text-[10px] font-bold px-2 py-0.5 bg-primary/20 text-primary rounded-full">
+                  IA
+                </span>
+              )}
+            </button>
+          ))}
+
+          <div className="pt-4 pb-2 px-4">
+            <p className="text-[10px] font-semibold text-slate-600 uppercase tracking-wider">Gestión</p>
           </div>
 
-          <nav className="flex-1 px-4 space-y-1.5 mt-2 overflow-y-auto custom-scrollbar">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => onScreenChange(item.id)}
-                className={cn(
-                  "group relative w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all duration-300 overflow-hidden",
-                  currentScreen === item.id
-                    ? "text-primary font-bold bg-primary/10 border border-primary/20 shadow-[inset_0_1px_10px_rgba(13,226,242,0.05)]"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
-                )}
-              >
-                {currentScreen === item.id && (
-                  <motion.div
-                    layoutId="active-pill"
-                    className="absolute left-0 w-1 h-6 bg-primary rounded-full shadow-[0_0_15px_rgba(13,226,242,1)]"
-                  />
-                )}
-                <span className={cn(
-                  "material-symbols-outlined transition-transform duration-300 group-hover:scale-110",
-                  currentScreen === item.id ? "text-primary" : "text-slate-500"
-                )}>
-                  {item.icon}
-                </span>
-                <span className="text-sm tracking-tight">{item.label}</span>
-              </button>
-            ))}
+          {adminItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => onScreenChange(item.id)}
+              className={cn(
+                "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm",
+                currentScreen === item.id
+                  ? "bg-primary/10 text-primary font-medium border border-primary/20"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+              )}
+            >
+              <span className={cn(
+                "material-symbols-outlined text-lg",
+                currentScreen === item.id ? "text-primary" : "text-slate-500"
+              )}>
+                {item.icon}
+              </span>
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </nav>
 
-            <div className="pt-6 pb-3 ml-4">
-              <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">Gestión Lab</p>
+        {/* User Profile */}
+        <div className="p-4 mt-auto">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-primary/20 transition-colors">
+            <img
+              alt="Avatar"
+              className="size-10 rounded-xl object-cover border border-white/10"
+              src="https://picsum.photos/seed/athlete/100/100"
+              referrerPolicy="no-referrer"
+            />
+            <div className="flex flex-col min-w-0 flex-1">
+              <span className="text-sm font-medium truncate">Usuario</span>
+              <span className="text-[10px] text-primary/80">Nivel Élite</span>
             </div>
-
-            {adminItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => onScreenChange(item.id)}
-                className={cn(
-                  "group w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all duration-300",
-                  currentScreen === item.id
-                    ? "text-primary font-bold bg-primary/10 border border-primary/20"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
-                )}
-              >
-                <span className={cn(
-                  "material-symbols-outlined",
-                  currentScreen === item.id ? "text-primary" : "text-slate-500"
-                )}>
-                  {item.icon}
-                </span>
-                <span className="text-sm tracking-tight">{item.label}</span>
-              </button>
-            ))}
-          </nav>
-
-          <div className="p-6 mt-auto">
-            <div className="glass p-4 rounded-3xl flex items-center gap-4 border border-white/5 hover:border-primary/20 transition-all group">
-              <div className="relative">
-                <img
-                  alt="Avatar"
-                  className="size-11 rounded-2xl object-cover border border-white/10 group-hover:border-primary/50 transition-colors"
-                  src="https://picsum.photos/seed/athlete/100/100"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute -bottom-1 -right-1 size-3.5 bg-emerald-500 border-2 border-background-dark rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-sm font-bold truncate">Alex Guerrero</span>
-                <span className="text-[10px] font-bold text-primary/80 uppercase tracking-widest">Nivel Élite v.4</span>
-              </div>
-              <motion.button
-                whileHover={{ rotate: 90 }}
-                className="ml-auto p-1.5 rounded-lg text-slate-500 hover:text-white transition-colors"
-              >
-                <span className="material-symbols-outlined text-xl">settings</span>
-              </motion.button>
-            </div>
+            <button className="p-1.5 rounded-lg text-slate-500 hover:text-white transition-colors">
+              <span className="material-symbols-outlined">settings</span>
+            </button>
           </div>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden relative z-10 p-6 lg:pl-0">
-        <header className="h-24 flex items-center justify-between px-8 mb-4">
-          <div className="flex flex-col">
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-1">Central Neural Command</p>
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-black">{currentScreen.charAt(0).toUpperCase() + currentScreen.slice(1)}</span>
-              <span className="size-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(13,226,242,1)]"></span>
-            </div>
+      <div className="flex-1 flex flex-col overflow-hidden relative z-10">
+        {/* Simplified Header */}
+        <header className="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-surface/30">
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-semibold">{screenTitle}</span>
+            {activeItem?.highlight && (
+              <span className="text-[10px] font-bold px-2 py-0.5 bg-primary/20 text-primary rounded-full">
+                POWERED BY AI
+              </span>
+            )}
           </div>
 
-          <div className="flex items-center gap-5">
-            <div className="hidden md:flex items-center bg-white/5 border border-white/5 focus-within:border-primary/30 rounded-2xl px-5 py-2.5 w-80 transition-all glass">
-              <span className="material-symbols-outlined text-slate-500 text-lg">search</span>
-              <input
-                className="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-slate-600 text-slate-200 ml-3"
-                placeholder="Escaneo de parámetros..."
-                type="text"
-              />
-            </div>
-
-            <div className="flex items-center gap-3">
-              <button className="size-12 flex items-center justify-center rounded-2xl glass hover:border-primary/50 transition-all text-slate-400 hover:text-primary relative group">
-                <span className="material-symbols-outlined group-hover:animate-pulse">notifications</span>
-                <span className="absolute top-3 right-3 size-2 bg-accent-red rounded-full ring-4 ring-background-dark"></span>
-              </button>
-
-              <button className="bg-primary hover:bg-primary/80 text-background-dark font-black py-3 px-8 rounded-2xl flex items-center gap-3 transition-all shadow-[0_8px_25px_-5px_rgba(13,226,242,0.4)] hover:shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 uppercase text-[11px] tracking-widest">
-                <span className="material-symbols-outlined font-bold text-lg">sync</span>
-                Sincronizar
-              </button>
-            </div>
+          <div className="flex items-center gap-3">
+            <button className="size-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 transition-all text-slate-400 hover:text-primary relative">
+              <span className="material-symbols-outlined">notifications</span>
+              <span className="absolute top-2 right-2 size-2 bg-accent-red rounded-full"></span>
+            </button>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto custom-scrollbar rounded-[3rem] glass p-10 border border-white/5 shadow-2xl relative overflow-x-hidden">
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto custom-scrollbar p-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentScreen}
-              initial={{ opacity: 0, scale: 0.98, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 1.02, y: -10 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
             >
               {children}
             </motion.div>

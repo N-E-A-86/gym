@@ -1,16 +1,22 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const apiKey = process.env.GEMINI_API_KEY;
-const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
+// Para Vite (frontend): usa variables que empiecen con VITE_
+// Para Node.js: usa GEMINI_API_KEY directamente
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY ||
+               import.meta.env.GEMINI_API_KEY ||
+               process.env.GEMINI_API_KEY;
+
+// Si no hay API key, el SDK intentará leer GEMINI_API_KEY del environment
+const ai = new GoogleGenAI({ ...(apiKey && { apiKey }) });
 
 export const getRoutineAdvice = async (metrics: any) => {
-  if (!ai) throw new Error("API Key not found");
+  if (!apiKey) throw new Error("API Key no configurada. Agrega VITE_GEMINI_API_KEY a tu archivo .env");
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
-    contents: `Analiza estas métricas de entrenamiento y biometría: ${JSON.stringify(metrics)}. 
-    Dame 3 consejos específicos en español para optimizar la rutina de entrenamiento. 
-    Responde en formato JSON con un array de objetos { "titulo": string, "consejo": string, "tipo": "recuperacion" | "intensidad" | "volumen" }.`,
+    model: "gemini-2-flash",
+    contents: `Analiza estas métricas de entrenamiento: ${JSON.stringify(metrics)}.
+    Dame 3 consejos en español para optimizar la rutina.
+    Responde en JSON: { "consejos": [{ "titulo": string, "consejo": string, "tipo": string }] }`,
     config: {
       responseMimeType: "application/json",
       responseSchema: {
@@ -36,16 +42,27 @@ export const getRoutineAdvice = async (metrics: any) => {
   return JSON.parse(response.text || "{}").consejos;
 };
 
-export const chatWithCoach = async (message: string, history: any[] = []) => {
-  if (!ai) throw new Error("API Key not found");
+export const chatWithCoach = async (message: string) => {
+  if (!apiKey) {
+    throw new Error("API Key no configurada. Crea un archivo .env con VITE_GEMINI_API_KEY=tu_api_key");
+  }
 
-  const chat = ai.chats.create({
-    model: "gemini-3.1-pro-preview",
-    config: {
-      systemInstruction: "Eres un coach experto en entrenamiento de fuerza y biometría deportiva. Tu nombre es Coach Gym. Responde de manera profesional, técnica pero accesible, y siempre en español. Ayuda al usuario a entender sus métricas y optimizar su rendimiento.",
-    },
-  });
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2-flash",
+      contents: `Eres Coach Gym, un experto en entrenamiento. Responde en español de forma profesional pero amigable.
 
-  const response = await chat.sendMessage({ message });
-  return response.text;
+Mensaje del usuario: ${message}`,
+    });
+
+    return response.text;
+  } catch (error: any) {
+    console.error("Error en chat:", error);
+
+    if (error.status === 429 || error.message?.includes("quota")) {
+      throw new Error("Límite de API alcanzado. Espera un momento o verifica tu plan en ai.google.dev");
+    }
+
+    throw new Error("Error al conectar con el coach. Intenta de nuevo.");
+  }
 };
